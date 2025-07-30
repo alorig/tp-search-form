@@ -123,7 +123,7 @@
             const $options = $customDropdown.find('.tpsf-custom-dropdown-options');
             const $text = $customDropdown.find('.tpsf-custom-dropdown-text');
             
-            // Populate options
+            // Populate options from existing select
             $select.find('option').each(function() {
                 if ($(this).val()) {
                     const $option = $(`<div class="tpsf-custom-dropdown-option" data-value="${$(this).val()}">${$(this).text()}</div>`);
@@ -157,7 +157,11 @@
             // Update custom dropdown when original select changes
             $select.on('change', function() {
                 const selectedText = $(this).find('option:selected').text();
-                $text.text(selectedText);
+                if (selectedText && selectedText !== 'Select ' + label) {
+                    $text.text(selectedText);
+                } else {
+                    $text.text(`Select ${label}`);
+                }
             });
         }
 
@@ -222,6 +226,8 @@
         loadMakes() {
             this.showLoading(this.elements.makeSelect);
             
+            console.log('Loading makes...');
+            
             $.ajax({
                 url: tpsf_ajax.ajax_url,
                 type: 'POST',
@@ -230,13 +236,17 @@
                     nonce: tpsf_ajax.nonce
                 },
                 success: (response) => {
+                    console.log('Makes response:', response);
                     if (response.success) {
+                        console.log('Makes data:', response.data);
                         this.populateDropdown(this.elements.makeSelect, response.data);
                     } else {
+                        console.error('Failed to load makes:', response);
                         this.showError('Failed to load makes.');
                     }
                 },
-                error: () => {
+                error: (xhr, status, error) => {
+                    console.error('AJAX error loading makes:', {xhr, status, error});
                     this.showError('Error loading makes. Please try again.');
                 }
             });
@@ -426,6 +436,8 @@
          * Populate dropdown with options
          */
         populateDropdown($select, options) {
+            console.log('Populating dropdown:', $select.attr('id'), 'with options:', options);
+            
             $select.empty();
             const label = $select.attr('id').replace('tpsf-', '').charAt(0).toUpperCase() + 
                          $select.attr('id').replace('tpsf-', '').slice(1);
@@ -433,8 +445,35 @@
             
             if (options && options.length > 0) {
                 options.forEach(option => {
+                    console.log('Adding option:', option);
                     $select.append(`<option value="${option.value}">${option.label}</option>`);
                 });
+            }
+            
+            // Update custom dropdown if it exists
+            const $customDropdown = $select.siblings('.tpsf-custom-dropdown');
+            if ($customDropdown.length) {
+                console.log('Updating custom dropdown for:', $select.attr('id'));
+                const $options = $customDropdown.find('.tpsf-custom-dropdown-options');
+                const $text = $customDropdown.find('.tpsf-custom-dropdown-text');
+                
+                // Clear existing options
+                $options.empty();
+                
+                // Add new options
+                $select.find('option').each(function() {
+                    if ($(this).val()) {
+                        const $option = $(`<div class="tpsf-custom-dropdown-option" data-value="${$(this).val()}">${$(this).text()}</div>`);
+                        $options.append($option);
+                        console.log('Added custom option:', $(this).text());
+                    }
+                });
+                
+                // Update trigger text
+                $text.text(`Select ${label}`);
+                console.log('Updated trigger text to:', `Select ${label}`);
+            } else {
+                console.log('No custom dropdown found for:', $select.attr('id'));
             }
         }
 

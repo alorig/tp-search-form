@@ -5,6 +5,8 @@
     --primary-color: #951834;
     --primary-light: #b52a4a;
     --primary-dark: #7a1428;
+    --primary-lighter: #d1456a;
+    --primary-lightest: #f8e6eb;
     --secondary-color: #000000;
     --secondary-light: #333333;
     --white: #ffffff;
@@ -18,12 +20,13 @@
     --gray-700: #374151;
     --gray-800: #1f2937;
     --gray-900: #111827;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 1px 3px rgba(149, 24, 52, 0.1);
+    --shadow-md: 0 4px 12px rgba(149, 24, 52, 0.15);
+    --shadow-lg: 0 8px 25px rgba(149, 24, 52, 0.2);
+    --shadow-xl: 0 16px 40px rgba(149, 24, 52, 0.25);
     --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     --gradient-secondary: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+    --gradient-light: linear-gradient(135deg, var(--primary-lightest) 0%, var(--white) 100%);
 }
 
 /* Container */
@@ -36,11 +39,11 @@
 
 /* Form Container */
 .tpsf-vehicle-search-form {
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--gradient-light);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-lg);
     padding: 48px;
-    border: 1px solid var(--gray-200);
+    border: 2px solid var(--primary-color);
     position: relative;
     overflow: hidden;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -55,12 +58,12 @@
     right: 0;
     height: 6px;
     background: var(--gradient-primary);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 .tpsf-vehicle-search-form:hover {
     transform: translateY(-4px);
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.15), 0 12px 40px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-xl);
 }
 
 /* Form Row - Sliding Animation */
@@ -177,7 +180,7 @@
     display: block;
     margin-bottom: 16px;
     font-weight: 700;
-    color: var(--gray-900);
+    color: var(--primary-color);
     font-size: 16px;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -202,7 +205,7 @@
 }
 
 .tpsf-form-group:focus-within .tpsf-label {
-    color: var(--primary-color);
+    color: var(--primary-dark);
     transform: translateY(-2px);
 }
 
@@ -210,11 +213,11 @@
 .tpsf-select {
     width: 100%;
     padding: 20px 24px;
-    border: 3px solid var(--gray-200);
+    border: 3px solid var(--primary-color);
     border-radius: 16px;
     font-size: 18px;
     font-weight: 500;
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--white);
     color: var(--gray-900);
     cursor: pointer;
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -224,34 +227,34 @@
     background-position: right 20px center;
     background-size: 20px;
     padding-right: 56px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
 }
 
 .tpsf-select:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 8px 32px rgba(149, 24, 52, 0.15), 0 4px 16px rgba(149, 24, 52, 0.1);
-    transform: translateY(-3px) scale(1.02);
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    border-color: var(--primary-dark);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    background: var(--white);
 }
 
 .tpsf-select:focus {
     outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 6px rgba(149, 24, 52, 0.15), 0 8px 32px rgba(149, 24, 52, 0.2);
-    transform: translateY(-4px) scale(1.03);
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 4px rgba(149, 24, 52, 0.2), var(--shadow-lg);
+    transform: translateY(-3px);
     background: var(--white);
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23951834' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='18,15 12,9 6,15'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
 .tpsf-select:disabled {
-    background: linear-gradient(145deg, var(--gray-100) 0%, var(--gray-200) 100%);
+    background: var(--gray-100);
     color: var(--gray-400);
     cursor: not-allowed;
     transform: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-sm);
+    border-color: var(--gray-300);
 }
 
 /* Native Select Options */
@@ -287,14 +290,14 @@
 }
 
 .tpsf-select::-webkit-scrollbar-thumb {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     border-radius: 10px;
     border: 2px solid var(--gray-100);
 }
 
 .tpsf-select::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(145deg, var(--primary-light) 0%, var(--primary-color) 100%);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.3);
+    background: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Custom Dropdown Styling */
@@ -306,34 +309,33 @@
 .tpsf-custom-dropdown-trigger {
     width: 100%;
     padding: 20px 24px;
-    border: 3px solid var(--gray-200);
+    border: 3px solid var(--primary-color);
     border-radius: 16px;
     font-size: 18px;
     font-weight: 500;
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--white);
     color: var(--gray-900);
     cursor: pointer;
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
-    backdrop-filter: blur(10px);
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .tpsf-custom-dropdown-trigger:hover {
-    border-color: var(--primary-color);
-    box-shadow: 0 8px 32px rgba(149, 24, 52, 0.15), 0 4px 16px rgba(149, 24, 52, 0.1);
-    transform: translateY(-3px) scale(1.02);
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    border-color: var(--primary-dark);
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+    background: var(--white);
 }
 
 .tpsf-custom-dropdown.open .tpsf-custom-dropdown-trigger {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 6px rgba(149, 24, 52, 0.15), 0 8px 32px rgba(149, 24, 52, 0.2);
-    transform: translateY(-4px) scale(1.03);
+    border-color: var(--primary-dark);
+    box-shadow: 0 0 0 4px rgba(149, 24, 52, 0.2), var(--shadow-lg);
+    transform: translateY(-3px);
     background: var(--white);
 }
 
@@ -351,17 +353,16 @@
     top: 100%;
     left: 0;
     right: 0;
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--white);
     border: 3px solid var(--primary-color);
     border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(149, 24, 52, 0.25), 0 8px 32px rgba(149, 24, 52, 0.15);
+    box-shadow: var(--shadow-xl);
     margin-top: 8px;
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px) scale(0.95);
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: 1000;
-    backdrop-filter: blur(20px);
     overflow: hidden;
 }
 
@@ -399,17 +400,17 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     opacity: 0;
     transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     z-index: -1;
 }
 
 .tpsf-custom-dropdown-option:hover {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     color: var(--white);
-    transform: translateY(-2px) scale(1.02);
-    box-shadow: 0 8px 24px rgba(149, 24, 52, 0.25), 0 4px 12px rgba(149, 24, 52, 0.15);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .tpsf-custom-dropdown-option:hover::before {
@@ -417,10 +418,10 @@
 }
 
 .tpsf-custom-dropdown-option.selected {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     color: var(--white);
     font-weight: 700;
-    box-shadow: 0 4px 16px rgba(149, 24, 52, 0.3);
+    box-shadow: var(--shadow-md);
 }
 
 /* Custom Dropdown Scrollbar */
@@ -435,14 +436,14 @@
 }
 
 .tpsf-custom-dropdown-options::-webkit-scrollbar-thumb {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     border-radius: 10px;
     border: 2px solid var(--gray-100);
 }
 
 .tpsf-custom-dropdown-options::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(145deg, var(--primary-light) 0%, var(--primary-color) 100%);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.3);
+    background: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
 }
 
 /* Reset Button */
@@ -454,7 +455,7 @@
 
 .tpsf-reset-button {
     padding: 16px 32px;
-    background: linear-gradient(145deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
+    background: var(--gradient-secondary);
     color: var(--white);
     border: none;
     border-radius: 16px;
@@ -462,12 +463,11 @@
     font-weight: 700;
     cursor: pointer;
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
     text-transform: uppercase;
     letter-spacing: 1px;
-    backdrop-filter: blur(10px);
 }
 
 .tpsf-reset-button::before {
@@ -483,8 +483,8 @@
 
 .tpsf-reset-button:hover {
     transform: translateY(-4px) scale(1.05);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25), 0 8px 20px rgba(0, 0, 0, 0.15);
-    background: linear-gradient(145deg, var(--secondary-light) 0%, var(--secondary-color) 100%);
+    box-shadow: var(--shadow-xl);
+    background: var(--gradient-secondary);
 }
 
 .tpsf-reset-button:hover::before {
@@ -497,16 +497,15 @@
 
 /* Results Container */
 .tpsf-results-container {
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--gradient-light);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-lg);
     padding: 48px;
-    border: 1px solid var(--gray-200);
+    border: 2px solid var(--primary-color);
     margin-top: 40px;
     position: relative;
     overflow: hidden;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(20px);
 }
 
 .tpsf-results-container::before {
@@ -517,12 +516,12 @@
     right: 0;
     height: 6px;
     background: var(--gradient-primary);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 .tpsf-results-container:hover {
     transform: translateY(-4px);
-    box-shadow: 0 32px 80px rgba(0, 0, 0, 0.15), 0 12px 40px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-xl);
 }
 
 .tpsf-results-header {
@@ -536,13 +535,9 @@
 
 .tpsf-results-header h3 {
     margin: 0;
-    color: var(--gray-800);
+    color: var(--primary-color);
     font-size: 28px;
     font-weight: 700;
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .tpsf-results-count {
@@ -563,16 +558,15 @@
 
 /* Tire Cards */
 .tpsf-tire-card {
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
-    border: 2px solid var(--gray-200);
+    background: var(--white);
+    border: 2px solid var(--primary-color);
     border-radius: 20px;
     padding: 32px;
     transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     cursor: pointer;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.04);
-    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-md);
 }
 
 .tpsf-tire-card::before {
@@ -585,14 +579,14 @@
     background: var(--gradient-primary);
     transform: scaleX(0);
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.3);
+    box-shadow: var(--shadow-sm);
 }
 
 .tpsf-tire-card:hover {
     transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 24px 60px rgba(149, 24, 52, 0.15), 0 12px 32px rgba(149, 24, 52, 0.1);
-    border-color: var(--primary-color);
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--primary-dark);
+    background: var(--white);
 }
 
 .tpsf-tire-card:hover::before {
@@ -610,27 +604,27 @@
     border-radius: 16px;
     margin-bottom: 24px;
     transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-    border: 2px solid var(--gray-200);
+    box-shadow: var(--shadow-md);
+    border: 2px solid var(--primary-color);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-image {
     transform: scale(1.08);
-    box-shadow: 0 16px 40px rgba(149, 24, 52, 0.2);
-    border-color: var(--primary-color);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-dark);
 }
 
 .tpsf-tire-title {
     font-size: 22px;
     font-weight: 800;
-    color: var(--gray-900);
+    color: var(--primary-color);
     margin-bottom: 16px;
     line-height: 1.3;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-title {
-    color: var(--primary-color);
+    color: var(--primary-dark);
     transform: translateY(-2px);
 }
 
@@ -640,14 +634,14 @@
     margin-bottom: 12px;
     font-weight: 600;
     padding: 8px 16px;
-    background: linear-gradient(145deg, var(--gray-100) 0%, var(--gray-200) 100%);
+    background: var(--gray-100);
     border-radius: 12px;
     display: inline-block;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-size {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     color: var(--white);
     transform: translateY(-1px);
 }
@@ -660,7 +654,7 @@
     margin-bottom: 16px;
     letter-spacing: 1px;
     padding: 8px 16px;
-    background: linear-gradient(145deg, rgba(149, 24, 52, 0.1) 0%, rgba(149, 24, 52, 0.05) 100%);
+    background: var(--primary-lightest);
     border-radius: 12px;
     display: inline-block;
     border: 2px solid transparent;
@@ -668,7 +662,7 @@
 }
 
 .tpsf-tire-card:hover .tpsf-tire-type {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     color: var(--white);
     border-color: var(--primary-color);
     transform: translateY(-1px);
@@ -694,20 +688,20 @@
     font-weight: 800;
     text-transform: uppercase;
     padding: 10px 20px;
-    background: linear-gradient(145deg, rgba(149, 24, 52, 0.1) 0%, rgba(149, 24, 52, 0.05) 100%);
+    background: var(--primary-lightest);
     border-radius: 16px;
     display: inline-block;
     border: 2px solid transparent;
     transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 2px 8px rgba(149, 24, 52, 0.1);
+    box-shadow: var(--shadow-sm);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-availability {
-    background: linear-gradient(145deg, var(--primary-color) 0%, var(--primary-light) 100%);
+    background: var(--gradient-primary);
     color: var(--white);
     border-color: var(--primary-color);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(149, 24, 52, 0.25);
+    box-shadow: var(--shadow-md);
 }
 
 /* Loading States */
@@ -715,9 +709,9 @@
     text-align: center;
     padding: 80px 20px;
     color: var(--gray-600);
-    background: linear-gradient(145deg, var(--white) 0%, var(--gray-50) 100%);
+    background: var(--white);
     border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    box-shadow: var(--shadow-md);
     margin: 20px 0;
 }
 
@@ -729,13 +723,13 @@
     border-radius: 50%;
     animation: spin 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
     margin: 0 auto 24px;
-    box-shadow: 0 4px 16px rgba(149, 24, 52, 0.2);
+    box-shadow: var(--shadow-md);
 }
 
 .tpsf-loading-spinner p {
     font-size: 18px;
     font-weight: 600;
-    color: var(--gray-700);
+    color: var(--primary-color);
     margin: 0;
     animation: pulse 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
 }
@@ -754,16 +748,15 @@
 .tpsf-error {
     color: #dc2626;
     padding: 24px 32px;
-    background: linear-gradient(145deg, #fef2f2 0%, #fecaca 100%);
+    background: #fef2f2;
     border: 2px solid #fecaca;
     border-radius: 16px;
     margin: 24px 0;
     text-align: center;
     font-weight: 600;
     font-size: 18px;
-    box-shadow: 0 4px 20px rgba(220, 38, 38, 0.15), 0 2px 8px rgba(220, 38, 38, 0.1);
+    box-shadow: var(--shadow-md);
     animation: slideInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    backdrop-filter: blur(10px);
 }
 
 /* Success States */
@@ -817,8 +810,8 @@
 
 /* Cookie Notice */
 .tpsf-cookie-notice {
-    background: linear-gradient(135deg, rgba(149, 24, 52, 0.1) 0%, rgba(149, 24, 52, 0.05) 100%);
-    border: 1px solid rgba(149, 24, 52, 0.2);
+    background: var(--primary-lightest);
+    border: 1px solid var(--primary-color);
     border-radius: 12px;
     padding: 16px 20px;
     margin-bottom: 20px;
