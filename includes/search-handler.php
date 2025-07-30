@@ -142,23 +142,31 @@ class TPSF_SearchHandler {
     public static function get_tire_results($make, $model) {
         $tires = array();
         
+        // Build taxonomy query based on available parameters
+        $tax_query = array();
+        
+        if (!empty($make)) {
+            $tax_query[] = array(
+                'taxonomy' => 'vehicle-make',
+                'field' => 'slug',
+                'terms' => $make,
+            );
+        }
+        
+        if (!empty($model)) {
+            $tax_query[] = array(
+                'taxonomy' => 'vehicles-model',
+                'field' => 'slug',
+                'terms' => $model,
+            );
+        }
+        
         // Get vehicles for this make and model using taxonomy queries
         $vehicles = get_posts(array(
             'post_type' => 'vehicle-model',
             'post_status' => 'publish',
             'posts_per_page' => -1,
-            'tax_query' => array(
-                array(
-                    'taxonomy' => 'vehicle-make',
-                    'field' => 'slug',
-                    'terms' => $make,
-                ),
-                array(
-                    'taxonomy' => 'vehicles-model',
-                    'field' => 'slug',
-                    'terms' => $model,
-                )
-            )
+            'tax_query' => $tax_query
         ));
         
         if (!empty($vehicles)) {

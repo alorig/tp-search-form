@@ -95,9 +95,10 @@
                 this.state.model = null;
                 this.state.year = null;
                 
+                console.log('Make selected:', selectedMake);
                 this.resetDependentDropdowns(['model', 'year']);
                 this.loadModels(selectedMake);
-                this.hideResults();
+                this.loadTireResults(selectedMake, ''); // Load products immediately
                 this.updateFormState();
             }
         }
@@ -228,6 +229,8 @@
             this.elements.resultsContainer.show();
             this.showLoading(this.elements.resultsGrid);
             
+            console.log('Loading tire results for:', make, model);
+            
             $.ajax({
                 url: tpsf_ajax.ajax_url,
                 type: 'POST',
@@ -238,13 +241,15 @@
                     nonce: tpsf_ajax.nonce
                 },
                 success: (response) => {
+                    console.log('Tire results response:', response);
                     if (response.success) {
                         this.displayTireResults(response.data);
                     } else {
                         this.showError('No tires found for this vehicle.');
                     }
                 },
-                error: () => {
+                error: (xhr, status, error) => {
+                    console.error('Tire results error:', error);
                     this.showError('Error loading tire results. Please try again.');
                 }
             });

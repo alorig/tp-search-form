@@ -17,7 +17,7 @@ $button_text = isset($atts['button_text']) ? esc_attr($atts['button_text']) : 'F
 
 <div class="tpsf-search-container">
     <form class="tpsf-vehicle-search-form" method="post" id="tpsf-vehicle-form">
-        <div class="tpsf-form-row">
+        <div class="tpsf-form-row single-dropdown">
             <!-- Make Dropdown -->
             <div class="tpsf-form-group">
                 <label for="tpsf-make" class="tpsf-label">Make</label>
