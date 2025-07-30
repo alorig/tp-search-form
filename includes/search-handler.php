@@ -142,6 +142,9 @@ class TPSF_SearchHandler {
     public static function get_tire_results($make, $model) {
         $tires = array();
         
+        // Debug logging
+        error_log("TPSF: Getting tire results for make: $make, model: $model");
+        
         // Build taxonomy query based on available parameters
         $tax_query = array();
         
@@ -169,9 +172,12 @@ class TPSF_SearchHandler {
             'tax_query' => $tax_query
         ));
         
+        error_log("TPSF: Found " . count($vehicles) . " vehicles");
+        
         if (!empty($vehicles)) {
             // Get tire products related to these vehicles
             $tire_products = self::get_tires_for_vehicles($vehicles);
+            error_log("TPSF: Found " . count($tire_products) . " tire products");
             
             foreach ($tire_products as $tire) {
                 $tires[] = array(
@@ -189,6 +195,7 @@ class TPSF_SearchHandler {
         
         // If no tires found, return some test data for demonstration
         if (empty($tires)) {
+            error_log("TPSF: No tires found, returning test data");
             $tires = array(
                 array(
                     'id' => 1,
@@ -213,6 +220,7 @@ class TPSF_SearchHandler {
             );
         }
         
+        error_log("TPSF: Returning " . count($tires) . " tires");
         return $tires;
     }
     

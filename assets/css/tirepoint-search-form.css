@@ -68,11 +68,14 @@
 /* Single Dropdown State */
 .tpsf-form-row.single-dropdown {
     justify-content: center;
+    align-items: center;
 }
 
 .tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(1) {
     flex: 0 0 auto;
+    width: 300px;
     max-width: 300px;
+    margin: 0 auto;
 }
 
 .tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(2),
