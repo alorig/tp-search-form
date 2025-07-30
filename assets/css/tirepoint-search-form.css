@@ -87,6 +87,13 @@
     pointer-events: none;
 }
 
+.tpsf-form-row.two-dropdowns .tpsf-form-group:nth-child(1),
+.tpsf-form-row.two-dropdowns .tpsf-form-group:nth-child(2) {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
 /* Three Dropdown State */
 .tpsf-form-row.three-dropdowns {
     justify-content: space-between;

@@ -308,11 +308,13 @@
             
             // Add appropriate state class
             if (make && !model && !year) {
-                this.elements.formRow.addClass(CONFIG.classes.singleDropdown);
-            } else if (make && model && !year) {
                 this.elements.formRow.addClass(CONFIG.classes.twoDropdowns);
+            } else if (make && model && !year) {
+                this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
             } else if (make && model && year) {
                 this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
+            } else {
+                this.elements.formRow.addClass(CONFIG.classes.singleDropdown);
             }
         }
 
