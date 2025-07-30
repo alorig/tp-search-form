@@ -1,0 +1,235 @@
+# IGNY8 DASHBOARD - CODE RULEBOOK
+# Version 1.0 - Standards for DRY, Global, and Modular Development
+
+## 🚨 CRITICAL MISTAKES TO NEVER REPEAT
+
+### 1. PAGE-SPECIFIC CSS CLASSES
+❌ NEVER DO:
+- Create classes like `keywords-table__actions`, `niche-selector`, `keywords-pagination`
+- Use page-specific prefixes like `keywords-`, `niche-`, `clusters-`
+- Create separate CSS files for individual pages
+
+✅ ALWAYS DO:
+- Use existing global classes from style.css
+- Check style.css FIRST before creating any new classes
+- Use semantic, reusable class names like `card`, `btn`, `badge`
+
+### 2. INLINE STYLES
+❌ NEVER DO:
+- Use `style="display: flex; gap: 32px; margin-bottom: 32px;"`
+- Add inline styles for layout, spacing, or colors
+- Use `style="text-align: center; padding: 40px; color: #888;"`
+- Use `em`, `rem`, `pt`, `cm`, `mm` units - ONLY use `px` or `%`
+
+✅ ALWAYS DO:
+- Use existing global classes from style.css
+- If no class exists, add it to style.css as a global class
+- Use utility classes like `text-center`, `p-20`, `m-0`
+- Use ONLY `px` or `%` for measurements
+
+### 3. DUPLICATE CSS RULES
+❌ NEVER DO:
+- Create `.data-table` when `.modern-table` already exists
+- Create `.progress-group` when it already exists
+- Create `.badge-group` when `.badge` already exists
+- Create `.actions-bar` when `.flex-between` already exists
+
+✅ ALWAYS DO:
+- Search style.css FIRST for existing classes
+- Use existing classes even if they have slightly different names
+- Consolidate similar functionality into existing classes
+
+### 4. PAGE-SPECIFIC JAVASCRIPT FILES
+❌ NEVER DO:
+- Create `assets/js/niches.js` for niches page only
+- Create `assets/js/keywords.js` for keywords page only
+- Create separate JS files for each of 60 pages
+
+✅ ALWAYS DO:
+- Use single shared `assets/js/dropdown.js` for all pages
+- Make JavaScript modular and reusable
+- Use data attributes for page-specific functionality
+
+### 5. CONDITIONAL ENQUEUE
+❌ NEVER DO:
+- Add conditional enqueue in functions.php for page-specific files
+- Use `is_page()` to load different JS/CSS per page
+- Create separate enqueue functions for each page
+
+✅ ALWAYS DO:
+- Enqueue global files that work on all pages
+- Use single `dropdown.js` for all dashboard functionality
+- Keep functions.php clean and minimal
+
+## 📋 EXISTING GLOBAL CLASSES (USE THESE)
+
+### Layout & Structure
+- `.page-main-container` - Main page wrapper
+- `.card` - Standard card container
+- `.card-title` - Card header text
+- `.flex-between` - Flex with space-between
+- `.flex` - Display flex
+- `.gap-24` - 24px gap
+- `.gap-32` - 32px gap
+
+### Metrics & Data
+- `.metrics-row` - Grid for metric cards
+- `.metric-card` - Individual metric card
+- `.metric-blue`, `.metric-green`, `.metric-pink`, `.metric-orange` - Color variants
+- `.metric-value` - Large number in metric card
+- `.metric-label` - Label text in metric card
+
+### Buttons & Actions
+- `.btn` - Base button class
+- `.btn-primary`, `.btn-secondary`, `.btn-success`, `.btn-warning`, `.btn-danger` - Button variants
+- `.btn-small`, `.btn-large` - Button sizes
+- `.btn-outline` - Outlined button style
+- `.btn-tertiary` - Tertiary button style
+
+### Badges & Status
+- `.badge` - Base badge class
+- `.badge-blue`, `.badge-green`, `.badge-red`, `.badge-gray`, `.badge-orange`, `.badge-purple`, `.badge-pink` - Badge colors
+- `.badge-group` - Container for multiple badges
+
+### Progress & Charts
+- `.progress-group` - Container for progress bars
+- `.progress-row` - Individual progress row
+- `.progress-bar` - Progress bar background
+- `.progress-fill` - Progress bar fill
+- `.fill-green`, `.fill-orange`, `.fill-blue` - Progress fill colors
+
+### Tables & Data
+- `.modern-table` - Standard table styling
+- `.data-table` - Table wrapper
+- `.right` - Right-aligned table cells
+
+### Filter & Search
+- `.igny8-filter-bar` - Filter bar container
+- `.igny8-dropdown` - Dropdown styling
+- `.ts-wrapper` - Tom Select wrapper
+- `.search-wrapper` - Search input wrapper
+
+### Utility Classes
+- `.text-center` - Center text alignment
+- `.text-primary`, `.text-secondary`, `.text-success`, `.text-warning`, `.text-danger` - Text colors
+- `.text-small`, `.text-large` - Text sizes
+- `.text-bold` - Bold text
+- `.m-0`, `.m-10`, `.m-20` - Margins
+- `.mb-10`, `.mb-20` - Bottom margins
+- `.mt-10`, `.mt-20` - Top margins
+- `.p-0`, `.p-10`, `.p-20` - Padding
+
+## 🔧 DEVELOPMENT STANDARDS
+
+### 1. DRY (Don't Repeat Yourself)
+- Use existing classes instead of creating new ones
+- Reuse components across all 60 pages
+- Single JavaScript file for all dashboard functionality
+- Single CSS file with global classes only
+
+### 2. Global Approach
+- All classes must work on any page
+- No page-specific prefixes or names
+- Consistent styling across entire dashboard
+- Shared functionality through data attributes
+
+### 3. Modular Design
+- Components must be reusable
+- JavaScript functions must work on any page
+- CSS classes must be semantic and flexible
+- No hardcoded page-specific logic
+
+### 4. Safety Checks
+- Always check if data exists before using it
+- Use fallbacks for missing ACF fields
+- Handle empty taxonomies gracefully
+- Provide empty states for missing data
+
+## 📝 CODE REVIEW CHECKLIST
+
+Before submitting any code:
+
+### CSS Classes
+- [ ] Did I check style.css for existing classes?
+- [ ] Am I using only global, reusable classes?
+- [ ] Did I avoid page-specific class names?
+- [ ] Did I avoid inline styles?
+
+### JavaScript
+- [ ] Am I using the shared dropdown.js file?
+- [ ] Is the code reusable across pages?
+- [ ] Did I avoid page-specific JS files?
+- [ ] Am I using data attributes for page-specific logic?
+
+### PHP
+- [ ] Am I using safety checks for all data?
+- [ ] Did I provide fallbacks for missing fields?
+- [ ] Is the code modular and reusable?
+- [ ] Did I avoid hardcoded values?
+
+### Structure
+- [ ] Am I using existing layout classes?
+- [ ] Did I follow the established patterns?
+- [ ] Is the code consistent with other pages?
+- [ ] Did I avoid duplicating functionality?
+
+## 🚫 FORBIDDEN PATTERNS
+
+### Never Create:
+- Page-specific CSS classes (`keywords-*`, `niche-*`, `clusters-*`)
+- Inline styles for layout or spacing
+- Separate JS files for individual pages
+- Duplicate CSS rules with different names
+- Conditional enqueue for page-specific files
+- Hardcoded values without fallbacks
+
+### Never Use:
+- `style="display: flex; gap: 32px;"`
+- `class="keywords-table__actions"`
+- `assets/js/niches.js`
+- `is_page()` for enqueue conditions
+- Classes that don't exist in style.css
+- `em`, `rem`, `pt`, `cm`, `mm` units - ONLY `px` or `%`
+
+## ✅ APPROVED PATTERNS
+
+### Always Use:
+- Existing classes from style.css
+- Single shared dropdown.js file
+- Safety checks for all data
+- Global, reusable components
+- Semantic class names
+- Data attributes for page-specific logic
+
+### Always Follow:
+- DRY principles
+- Global approach
+- Modular design
+- Safety-first development
+- Existing patterns and conventions
+
+## 📚 REFERENCE FILES
+
+### Core Files to Check:
+- `assets/css/style.css` - All available global classes
+- `assets/js/dropdown.js` - Shared JavaScript functionality
+- `functions.php` - WordPress hooks and enqueue
+- `igny8-theme-elements.php` - Component examples
+
+### Before Creating New Classes:
+1. Search style.css for existing similar classes
+2. Check if existing classes can be reused
+3. Consider if the class should be global
+4. Add to style.css only if truly needed globally
+
+---
+
+## 🎯 REMEMBER: 60 PAGES, 1 CODEBASE
+
+Every decision must consider:
+- Will this work on all 60 pages?
+- Is this reusable and modular?
+- Does this follow existing patterns?
+- Is this maintainable long-term?
+
+The goal is ONE codebase that serves ALL pages efficiently. 
