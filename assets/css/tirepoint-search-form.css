@@ -27,6 +27,9 @@
     --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
     --gradient-secondary: linear-gradient(135deg, var(--secondary-color) 0%, var(--secondary-light) 100%);
     --gradient-light: linear-gradient(135deg, var(--primary-lightest) 0%, var(--white) 100%);
+    --transition-fast: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-medium: 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    --transition-slow: 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Container */
@@ -47,7 +50,7 @@
     border: 2px solid var(--primary-color);
     position: relative;
     overflow: visible;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
 }
 
 .tpsf-vehicle-search-form::before {
@@ -72,7 +75,7 @@
     gap: 32px;
     margin-bottom: 40px;
     position: relative;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
     min-height: 120px;
     align-items: center;
     overflow: visible;
@@ -91,7 +94,7 @@
     margin: 0 auto;
     transform: scale(1);
     opacity: 1;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
 }
 
 .tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(2),
@@ -115,14 +118,14 @@
 
 .tpsf-form-row.two-dropdowns .tpsf-form-group:nth-child(1) {
     transform: translateX(-20px) scale(0.95);
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
 }
 
 .tpsf-form-row.two-dropdowns .tpsf-form-group:nth-child(2) {
     transform: translateX(0) scale(1);
     opacity: 1;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation: slideInRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
+    animation: slideInRight var(--transition-slow);
 }
 
 .tpsf-form-row.two-dropdowns .tpsf-form-group:last-child {
@@ -143,18 +146,18 @@
     transform: translateX(0) scale(1);
     pointer-events: auto;
     display: block;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
 }
 
 .tpsf-form-row.three-dropdowns .tpsf-form-group:nth-child(3) {
-    animation: slideInRight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s both;
+    animation: slideInRight var(--transition-slow) 0.2s both;
 }
 
 /* Form Groups */
 .tpsf-form-group {
     flex: 1;
     min-width: 0;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
     position: relative;
     overflow: visible;
     z-index: 1;
@@ -188,7 +191,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     position: relative;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
 }
 
 .tpsf-label::after {
@@ -199,7 +202,7 @@
     width: 0;
     height: 3px;
     background: var(--gradient-primary);
-    transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: width var(--transition-medium);
     border-radius: 2px;
 }
 
@@ -223,7 +226,7 @@
     background: var(--white);
     color: var(--gray-900);
     cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-medium);
     appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23951834' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
@@ -239,7 +242,6 @@
     border-color: var(--primary-dark);
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
-    background: var(--white);
 }
 
 .tpsf-select:focus {
@@ -247,7 +249,6 @@
     border-color: var(--primary-dark);
     box-shadow: 0 0 0 4px rgba(149, 24, 52, 0.2), var(--shadow-lg);
     transform: translateY(-3px);
-    background: var(--white);
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23951834' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='18,15 12,9 6,15'%3e%3c/polyline%3e%3c/svg%3e");
 }
 
@@ -320,7 +321,7 @@
     background: var(--white);
     color: var(--gray-900);
     cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-medium);
     box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
@@ -333,19 +334,17 @@
     border-color: var(--primary-dark);
     box-shadow: var(--shadow-lg);
     transform: translateY(-2px);
-    background: var(--white);
 }
 
 .tpsf-custom-dropdown.open .tpsf-custom-dropdown-trigger {
     border-color: var(--primary-dark);
     box-shadow: 0 0 0 4px rgba(149, 24, 52, 0.2), var(--shadow-lg);
     transform: translateY(-3px);
-    background: var(--white);
 }
 
 .tpsf-custom-dropdown-arrow {
     color: var(--primary-color);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform var(--transition-medium);
 }
 
 .tpsf-custom-dropdown.open .tpsf-custom-dropdown-arrow {
@@ -362,7 +361,7 @@
     opacity: 0;
     visibility: hidden;
     transform: translateY(-10px) scale(0.95);
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-medium);
     z-index: 999999;
     overflow: visible;
     pointer-events: none;
@@ -393,7 +392,7 @@
     border: none;
     margin: 4px;
     border-radius: 12px;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -408,7 +407,7 @@
     bottom: 0;
     background: var(--gradient-primary);
     opacity: 0;
-    transition: opacity 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: opacity var(--transition-fast);
     z-index: -1;
 }
 
@@ -468,7 +467,7 @@
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-medium);
     box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
@@ -484,13 +483,12 @@
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: left var(--transition-slow);
 }
 
 .tpsf-reset-button:hover {
     transform: translateY(-4px) scale(1.05);
     box-shadow: var(--shadow-xl);
-    background: var(--gradient-secondary);
 }
 
 .tpsf-reset-button:hover::before {
@@ -511,7 +509,7 @@
     margin-top: 40px;
     position: relative;
     overflow: visible;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
 }
 
 .tpsf-results-container::before {
@@ -568,7 +566,7 @@
     border: 2px solid var(--primary-color);
     border-radius: 20px;
     padding: 32px;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-slow);
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -584,7 +582,7 @@
     height: 4px;
     background: var(--gradient-primary);
     transform: scaleX(0);
-    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: transform var(--transition-medium);
     box-shadow: var(--shadow-sm);
 }
 
@@ -592,7 +590,6 @@
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-xl);
     border-color: var(--primary-dark);
-    background: var(--white);
 }
 
 .tpsf-tire-card:hover::before {
@@ -609,7 +606,7 @@
     object-fit: cover;
     border-radius: 16px;
     margin-bottom: 24px;
-    transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-medium);
     box-shadow: var(--shadow-md);
     border: 2px solid var(--primary-color);
 }
@@ -626,7 +623,7 @@
     color: var(--primary-color);
     margin-bottom: 16px;
     line-height: 1.3;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-title {
@@ -643,7 +640,7 @@
     background: var(--gray-100);
     border-radius: 12px;
     display: inline-block;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-size {
@@ -664,7 +661,7 @@
     border-radius: 12px;
     display: inline-block;
     border: 2px solid transparent;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-type {
@@ -680,7 +677,7 @@
     color: var(--primary-color);
     margin-bottom: 16px;
     text-shadow: 0 2px 4px rgba(149, 24, 52, 0.2);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
 }
 
 .tpsf-tire-card:hover .tpsf-tire-price {
@@ -698,7 +695,7 @@
     border-radius: 16px;
     display: inline-block;
     border: 2px solid transparent;
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transition: all var(--transition-fast);
     box-shadow: var(--shadow-sm);
 }
 
@@ -867,11 +864,6 @@
 @media (max-width: 480px) {
     .tpsf-vehicle-search-form {
         padding: 20px;
-    }
-    
-    .tpsf-select {
-        padding: 14px 16px;
-        font-size: 16px;
     }
     
     .tpsf-tire-card {
