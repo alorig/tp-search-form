@@ -82,6 +82,83 @@
             this.elements.modelSelect.on('change', this.handleModelChange.bind(this));
             this.elements.yearSelect.on('change', this.handleYearChange.bind(this));
             this.elements.resetButton.on('click', this.handleReset.bind(this));
+            
+            // Initialize custom dropdowns
+            this.initializeCustomDropdowns();
+        }
+
+        initializeCustomDropdowns() {
+            // Replace native selects with custom dropdowns
+            this.createCustomDropdown(this.elements.makeSelect, 'Make');
+            this.createCustomDropdown(this.elements.modelSelect, 'Model');
+            this.createCustomDropdown(this.elements.yearSelect, 'Year');
+        }
+
+        createCustomDropdown($select, label) {
+            const $container = $select.parent();
+            const $label = $container.find('.tpsf-label');
+            
+            // Create custom dropdown HTML
+            const customDropdown = `
+                <div class="tpsf-custom-dropdown">
+                    <div class="tpsf-custom-dropdown-trigger">
+                        <span class="tpsf-custom-dropdown-text">Select ${label}</span>
+                        <svg class="tpsf-custom-dropdown-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6,9 12,15 18,9"></polyline>
+                        </svg>
+                    </div>
+                    <div class="tpsf-custom-dropdown-menu">
+                        <div class="tpsf-custom-dropdown-options"></div>
+                    </div>
+                </div>
+            `;
+            
+            // Insert custom dropdown after the original select
+            $select.after(customDropdown);
+            $select.hide();
+            
+            const $customDropdown = $container.find('.tpsf-custom-dropdown');
+            const $trigger = $customDropdown.find('.tpsf-custom-dropdown-trigger');
+            const $menu = $customDropdown.find('.tpsf-custom-dropdown-menu');
+            const $options = $customDropdown.find('.tpsf-custom-dropdown-options');
+            const $text = $customDropdown.find('.tpsf-custom-dropdown-text');
+            
+            // Populate options
+            $select.find('option').each(function() {
+                if ($(this).val()) {
+                    const $option = $(`<div class="tpsf-custom-dropdown-option" data-value="${$(this).val()}">${$(this).text()}</div>`);
+                    $options.append($option);
+                }
+            });
+            
+            // Handle dropdown toggle
+            $trigger.on('click', function(e) {
+                e.preventDefault();
+                $customDropdown.toggleClass('open');
+            });
+            
+            // Handle option selection
+            $options.on('click', '.tpsf-custom-dropdown-option', function() {
+                const value = $(this).data('value');
+                const text = $(this).text();
+                
+                $text.text(text);
+                $select.val(value).trigger('change');
+                $customDropdown.removeClass('open');
+            });
+            
+            // Close dropdown when clicking outside
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.tpsf-custom-dropdown').length) {
+                    $customDropdown.removeClass('open');
+                }
+            });
+            
+            // Update custom dropdown when original select changes
+            $select.on('change', function() {
+                const selectedText = $(this).find('option:selected').text();
+                $text.text(selectedText);
+            });
         }
 
         /**
