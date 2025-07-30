@@ -127,24 +127,30 @@ class TirePointSearchForm {
      * Handle AJAX request to get tire results for make and model
      */
     public function handle_get_tire_results() {
-        check_ajax_referer('tpsf_nonce', 'nonce');
-        
-        $make = sanitize_text_field($_POST['make']);
-        $model = sanitize_text_field($_POST['model']);
-        
-        // Allow make-only searches
-        if (empty($make)) {
-            wp_send_json_error('Make is required.');
+        try {
+            check_ajax_referer('tpsf_nonce', 'nonce');
+            
+            $make = sanitize_text_field($_POST['make']);
+            $model = sanitize_text_field($_POST['model']);
+            
+            // Allow make-only searches
+            if (empty($make)) {
+                wp_send_json_error('Make is required.');
+            }
+            
+            // Log the search
+            TPSF_SearchHandler::log_search(array(
+                'make' => $make,
+                'model' => $model
+            ));
+            
+            $tires = TPSF_SearchHandler::get_tire_results($make, $model);
+            wp_send_json_success($tires);
+            
+        } catch (Exception $e) {
+            error_log("TPSF Error: " . $e->getMessage());
+            wp_send_json_error('Error processing request: ' . $e->getMessage());
         }
-        
-        // Log the search
-        TPSF_SearchHandler::log_search(array(
-            'make' => $make,
-            'model' => $model
-        ));
-        
-        $tires = TPSF_SearchHandler::get_tire_results($make, $model);
-        wp_send_json_success($tires);
     }
     
     /**

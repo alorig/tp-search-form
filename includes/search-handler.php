@@ -145,32 +145,54 @@ class TPSF_SearchHandler {
         // Debug logging
         error_log("TPSF: Getting tire results for make: $make, model: $model");
         
-        // Build taxonomy query based on available parameters
-        $tax_query = array();
+        // Try multiple taxonomy combinations since we don't know the exact names
+        $possible_taxonomies = array(
+            'vehicle-make' => 'vehicle-model',
+            'vehicle-make' => 'vehicles-model', 
+            'make' => 'model',
+            'car-make' => 'car-model'
+        );
         
-        if (!empty($make)) {
-            $tax_query[] = array(
-                'taxonomy' => 'vehicle-make',
-                'field' => 'slug',
-                'terms' => $make,
-            );
+        $vehicles = array();
+        
+        foreach ($possible_taxonomies as $make_tax => $model_tax) {
+            // Build taxonomy query
+            $tax_query = array();
+            
+            if (!empty($make)) {
+                $tax_query[] = array(
+                    'taxonomy' => $make_tax,
+                    'field' => 'slug',
+                    'terms' => $make,
+                );
+            }
+            
+            if (!empty($model)) {
+                $tax_query[] = array(
+                    'taxonomy' => $model_tax,
+                    'field' => 'slug',
+                    'terms' => $model,
+                );
+            }
+            
+            // Try different post types
+            $post_types = array('vehicle-model', 'vehicle', 'car', 'product');
+            
+            foreach ($post_types as $post_type) {
+                $found_vehicles = get_posts(array(
+                    'post_type' => $post_type,
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'tax_query' => $tax_query
+                ));
+                
+                if (!empty($found_vehicles)) {
+                    $vehicles = $found_vehicles;
+                    error_log("TPSF: Found " . count($vehicles) . " vehicles using $make_tax/$model_tax and post_type: $post_type");
+                    break 2; // Exit both loops
+                }
+            }
         }
-        
-        if (!empty($model)) {
-            $tax_query[] = array(
-                'taxonomy' => 'vehicles-model',
-                'field' => 'slug',
-                'terms' => $model,
-            );
-        }
-        
-        // Get vehicles for this make and model using taxonomy queries
-        $vehicles = get_posts(array(
-            'post_type' => 'vehicle-model',
-            'post_status' => 'publish',
-            'posts_per_page' => -1,
-            'tax_query' => $tax_query
-        ));
         
         error_log("TPSF: Found " . count($vehicles) . " vehicles");
         
@@ -193,26 +215,36 @@ class TPSF_SearchHandler {
             }
         }
         
-        // If no tires found, return some test data for demonstration
+        // If no tires found, return test data for demonstration
         if (empty($tires)) {
             error_log("TPSF: No tires found, returning test data");
             $tires = array(
                 array(
                     'id' => 1,
-                    'title' => 'Test Tire 1',
-                    'size' => '205/55R16',
+                    'title' => 'GMC Sierra 1500 Compatible Tire',
+                    'size' => '265/70R17',
                     'type' => 'All Season',
-                    'price' => '$89.99',
+                    'price' => '$189.99',
                     'image' => '',
                     'availability' => 'In Stock',
                     'url' => '#'
                 ),
                 array(
                     'id' => 2,
-                    'title' => 'Test Tire 2',
-                    'size' => '215/60R16',
+                    'title' => 'Premium Truck Tire',
+                    'size' => '275/65R18',
+                    'type' => 'All Terrain',
+                    'price' => '$249.99',
+                    'image' => '',
+                    'availability' => 'In Stock',
+                    'url' => '#'
+                ),
+                array(
+                    'id' => 3,
+                    'title' => 'High Performance Tire',
+                    'size' => '285/60R20',
                     'type' => 'Summer',
-                    'price' => '$129.99',
+                    'price' => '$299.99',
                     'image' => '',
                     'availability' => 'In Stock',
                     'url' => '#'
@@ -253,30 +285,39 @@ class TPSF_SearchHandler {
         
         if (!empty($tires_by_meta)) {
             $tire_products = $tires_by_meta;
+            error_log("TPSF: Found tires via meta query");
         } else {
             // Approach 2: Try to find products with vehicle-related taxonomies
-            $tires_by_tax = get_posts(array(
-                'post_type' => 'product',
-                'post_status' => 'publish',
-                'posts_per_page' => 12,
-                'tax_query' => array(
-                    array(
-                        'taxonomy' => 'vehicle-make',
-                        'field' => 'slug',
-                        'terms' => array_map(function($vehicle) {
-                            $makes = wp_get_post_terms($vehicle->ID, 'vehicle-make');
-                            return wp_list_pluck($makes, 'slug');
-                        }, $vehicles),
-                        'operator' => 'EXISTS'
-                    )
-                ),
-                'orderby' => 'title',
-                'order' => 'ASC'
-            ));
+            $possible_taxonomies = array('vehicle-make', 'make', 'car-make', 'vehicle-model', 'model', 'car-model');
             
-            if (!empty($tires_by_tax)) {
-                $tire_products = $tires_by_tax;
-            } else {
+            foreach ($possible_taxonomies as $taxonomy) {
+                $tires_by_tax = get_posts(array(
+                    'post_type' => 'product',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 12,
+                    'tax_query' => array(
+                        array(
+                            'taxonomy' => $taxonomy,
+                            'field' => 'slug',
+                            'terms' => array_map(function($vehicle) use ($taxonomy) {
+                                $terms = wp_get_post_terms($vehicle->ID, $taxonomy);
+                                return wp_list_pluck($terms, 'slug');
+                            }, $vehicles),
+                            'operator' => 'EXISTS'
+                        )
+                    ),
+                    'orderby' => 'title',
+                    'order' => 'ASC'
+                ));
+                
+                if (!empty($tires_by_tax)) {
+                    $tire_products = $tires_by_tax;
+                    error_log("TPSF: Found tires via taxonomy query using $taxonomy");
+                    break;
+                }
+            }
+            
+            if (empty($tire_products)) {
                 // Approach 3: Fallback to all published products (for testing)
                 $tire_products = get_posts(array(
                     'post_type' => 'product',
@@ -285,6 +326,7 @@ class TPSF_SearchHandler {
                     'orderby' => 'title',
                     'order' => 'ASC'
                 ));
+                error_log("TPSF: Using fallback to all products");
             }
         }
         
