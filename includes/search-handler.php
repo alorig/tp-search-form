@@ -21,15 +21,27 @@ class TPSF_SearchHandler {
         // Get all makes
         $make_terms = get_terms(array(
             'taxonomy' => 'vehicle-make',
-            'hide_empty' => true,
+            'hide_empty' => false,
+            'parent' => 0,
             'orderby' => 'name',
             'order' => 'ASC'
         ));
         
         if (!empty($make_terms) && !is_wp_error($make_terms)) {
             foreach ($make_terms as $make) {
-                // Check if this make has vehicles with tire products
-                if (self::make_has_tires($make->slug)) {
+                // Check if this make is actually used in any published vehicle-model posts
+                $related_posts = get_posts(array(
+                    'post_type' => 'vehicle-model',
+                    'post_status' => 'publish',
+                    'numberposts' => 1,
+                    'tax_query' => array(array(
+                        'taxonomy' => 'vehicle-make',
+                        'field' => 'slug',
+                        'terms' => $make->slug,
+                    )),
+                ));
+                
+                if (!empty($related_posts)) {
                     $makes[] = array(
                         'value' => $make->slug,
                         'label' => $make->name
@@ -46,30 +58,34 @@ class TPSF_SearchHandler {
      */
     public static function get_models($make) {
         $models = array();
+        $model_terms = array();
         
-        // Get models that belong to the selected make and have vehicles with tire products
-        $model_terms = get_terms(array(
-            'taxonomy' => 'vehicles-model',
-            'hide_empty' => true,
-            'meta_query' => array(
-                array(
-                    'key' => 'parent_make',
-                    'value' => $make,
-                    'compare' => '='
-                )
-            )
+        // Get all published vehicle-model posts for this make
+        $posts = get_posts(array(
+            'post_type' => 'vehicle-model',
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'tax_query' => array(array(
+                'taxonomy' => 'vehicle-make',
+                'field' => 'slug',
+                'terms' => $make,
+            )),
         ));
         
-        if (!empty($model_terms) && !is_wp_error($model_terms)) {
-            foreach ($model_terms as $model) {
-                // Check if this model has vehicles with tire products
-                if (self::model_has_tires($model->slug)) {
-                    $models[] = array(
-                        'value' => $model->slug,
-                        'label' => $model->name
-                    );
-                }
+        // Extract unique models from these posts
+        foreach ($posts as $post) {
+            $post_models = wp_get_post_terms($post->ID, 'vehicles-model');
+            foreach ($post_models as $model) {
+                $model_terms[$model->slug] = $model->name;
             }
+        }
+        
+        // Convert to array format
+        foreach ($model_terms as $slug => $name) {
+            $models[] = array(
+                'value' => $slug,
+                'label' => $name
+            );
         }
         
         return $models;
@@ -80,42 +96,41 @@ class TPSF_SearchHandler {
      */
     public static function get_years($make, $model) {
         $years = array();
+        $year_terms = array();
         
-        // Get vehicles for this make and model
-        $vehicles = get_posts(array(
+        // Get all published vehicle-model posts for this make and model
+        $posts = get_posts(array(
             'post_type' => 'vehicle-model',
-            'posts_per_page' => -1,
-            'meta_query' => array(
+            'post_status' => 'publish',
+            'numberposts' => -1,
+            'tax_query' => array(
                 array(
-                    'key' => 'make',
-                    'value' => $make,
-                    'compare' => '='
+                    'taxonomy' => 'vehicle-make',
+                    'field' => 'slug',
+                    'terms' => $make,
                 ),
                 array(
-                    'key' => 'model',
-                    'value' => $model,
-                    'compare' => '='
+                    'taxonomy' => 'vehicles-model',
+                    'field' => 'slug',
+                    'terms' => $model,
                 )
             )
         ));
         
-        // Get years from vehicle-model-year taxonomy for these vehicles
-        $year_terms = get_terms(array(
-            'taxonomy' => 'vehicle-model-year',
-            'hide_empty' => true,
-            'object_ids' => wp_list_pluck($vehicles, 'ID')
-        ));
-        
-        if (!empty($year_terms) && !is_wp_error($year_terms)) {
-            foreach ($year_terms as $year) {
-                // Check if this year has tire products
-                if (self::year_has_tires($make, $model, $year->slug)) {
-                    $years[] = array(
-                        'value' => $year->slug,
-                        'label' => $year->name
-                    );
-                }
+        // Extract unique years from these posts
+        foreach ($posts as $post) {
+            $post_years = wp_get_post_terms($post->ID, 'vehicle-model-year');
+            foreach ($post_years as $year) {
+                $year_terms[$year->slug] = $year->name;
             }
+        }
+        
+        // Convert to array format
+        foreach ($year_terms as $slug => $name) {
+            $years[] = array(
+                'value' => $slug,
+                'label' => $name
+            );
         }
         
         return $years;
@@ -166,105 +181,7 @@ class TPSF_SearchHandler {
         return $tires;
     }
     
-    /**
-     * Check if make has vehicles with tire products
-     */
-    private static function make_has_tires($make_slug) {
-        $vehicles = get_posts(array(
-            'post_type' => 'vehicle-model',
-            'posts_per_page' => 1,
-            'meta_query' => array(
-                array(
-                    'key' => 'make',
-                    'value' => $make_slug,
-                    'compare' => '='
-                )
-            )
-        ));
-        
-        if (!empty($vehicles)) {
-            return self::vehicle_has_tires($vehicles[0]->ID);
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Check if model has vehicles with tire products
-     */
-    private static function model_has_tires($model_slug) {
-        $vehicles = get_posts(array(
-            'post_type' => 'vehicle-model',
-            'posts_per_page' => 1,
-            'meta_query' => array(
-                array(
-                    'key' => 'model',
-                    'value' => $model_slug,
-                    'compare' => '='
-                )
-            )
-        ));
-        
-        if (!empty($vehicles)) {
-            return self::vehicle_has_tires($vehicles[0]->ID);
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Check if year has tire products
-     */
-    private static function year_has_tires($make, $model, $year) {
-        $vehicles = get_posts(array(
-            'post_type' => 'vehicle-model',
-            'posts_per_page' => 1,
-            'meta_query' => array(
-                array(
-                    'key' => 'make',
-                    'value' => $make,
-                    'compare' => '='
-                ),
-                array(
-                    'key' => 'model',
-                    'value' => $model,
-                    'compare' => '='
-                ),
-                array(
-                    'key' => 'year',
-                    'value' => $year,
-                    'compare' => '='
-                )
-            )
-        ));
-        
-        if (!empty($vehicles)) {
-            return self::vehicle_has_tires($vehicles[0]->ID);
-        }
-        
-        return false;
-    }
-    
-    /**
-     * Check if vehicle has tire products
-     */
-    private static function vehicle_has_tires($vehicle_id) {
-        // This would depend on your specific relationship setup
-        // Example: Check if vehicle has related tire products
-        $related_tires = get_posts(array(
-            'post_type' => 'product',
-            'posts_per_page' => 1,
-            'meta_query' => array(
-                array(
-                    'key' => '_vehicle_id',
-                    'value' => $vehicle_id,
-                    'compare' => '='
-                )
-            )
-        ));
-        
-        return !empty($related_tires);
-    }
+
     
     /**
      * Get tires for vehicles
