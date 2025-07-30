@@ -1,364 +1,467 @@
 /**
- * TirePoint Vehicle Search Form JavaScript
+ * TirePoint Vehicle Search Form - Premium UI JavaScript
+ * Professional, modular implementation with sliding dropdown behavior
  */
 
-jQuery(document).ready(function($) {
-    
-    // Initialize vehicle search form functionality
-    function initVehicleSearchForm() {
-        const $makeSelect = $('#tpsf-make');
-        const $modelSelect = $('#tpsf-model');
-        const $yearSelect = $('#tpsf-year');
-        const $resetButton = $('#tpsf-reset-form');
-        const $resultsContainer = $('#tpsf-results');
-        const $loadingSpinner = $('#tpsf-loading');
-        
-        // Load makes dynamically on page load
-        loadMakes();
-        
-        // Load saved selections from cookies
-        loadSavedSelections();
-        
-        // Handle Make selection
-        $makeSelect.on('change', function() {
-            const selectedMake = $(this).val();
+(function($) {
+    'use strict';
+
+    // Configuration
+    const CONFIG = {
+        selectors: {
+            form: '#tpsf-vehicle-form',
+            makeSelect: '#tpsf-make',
+            modelSelect: '#tpsf-model',
+            yearSelect: '#tpsf-year',
+            resetButton: '#tpsf-reset-form',
+            resultsContainer: '#tpsf-results',
+            resultsGrid: '#tpsf-results-grid',
+            resultsCount: '.tpsf-results-count',
+            loadingSpinner: '#tpsf-loading',
+            formRow: '.tpsf-form-row'
+        },
+        classes: {
+            singleDropdown: 'single-dropdown',
+            twoDropdowns: 'two-dropdowns',
+            threeDropdowns: 'three-dropdowns',
+            hidden: 'hidden',
+            fadeIn: 'tpsf-fade-in'
+        },
+        animations: {
+            duration: 500,
+            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        }
+    };
+
+    // Main Controller Class
+    class TirePointSearchController {
+        constructor() {
+            this.elements = {};
+            this.state = {
+                make: null,
+                model: null,
+                year: null
+            };
+            this.init();
+        }
+
+        /**
+         * Initialize the controller
+         */
+        init() {
+            this.cacheElements();
+            this.bindEvents();
+            this.loadMakes();
+            this.loadSavedSelections();
+            this.updateFormState();
+        }
+
+        /**
+         * Cache DOM elements for performance
+         */
+        cacheElements() {
+            this.elements = {
+                form: $(CONFIG.selectors.form),
+                makeSelect: $(CONFIG.selectors.makeSelect),
+                modelSelect: $(CONFIG.selectors.modelSelect),
+                yearSelect: $(CONFIG.selectors.yearSelect),
+                resetButton: $(CONFIG.selectors.resetButton),
+                resultsContainer: $(CONFIG.selectors.resultsContainer),
+                resultsGrid: $(CONFIG.selectors.resultsGrid),
+                resultsCount: $(CONFIG.selectors.resultsCount),
+                loadingSpinner: $(CONFIG.selectors.loadingSpinner),
+                formRow: $(CONFIG.selectors.formRow)
+            };
+        }
+
+        /**
+         * Bind event handlers
+         */
+        bindEvents() {
+            this.elements.makeSelect.on('change', this.handleMakeChange.bind(this));
+            this.elements.modelSelect.on('change', this.handleModelChange.bind(this));
+            this.elements.yearSelect.on('change', this.handleYearChange.bind(this));
+            this.elements.resetButton.on('click', this.handleReset.bind(this));
+        }
+
+        /**
+         * Handle make selection change
+         */
+        handleMakeChange(event) {
+            const selectedMake = $(event.target).val();
             
             if (selectedMake) {
-                // Reset dependent dropdowns
-                resetDropdown($modelSelect);
-                resetDropdown($yearSelect);
+                this.state.make = selectedMake;
+                this.state.model = null;
+                this.state.year = null;
                 
-                // Load models for selected make
-                loadModels(selectedMake);
-                
-                // Hide results
-                $resultsContainer.hide();
+                this.resetDependentDropdowns(['model', 'year']);
+                this.loadModels(selectedMake);
+                this.hideResults();
+                this.updateFormState();
             }
-        });
-        
-        // Handle Model selection
-        $modelSelect.on('change', function() {
-            const selectedModel = $(this).val();
-            const selectedMake = $makeSelect.val();
+        }
+
+        /**
+         * Handle model selection change
+         */
+        handleModelChange(event) {
+            const selectedModel = $(event.target).val();
             
-            if (selectedModel && selectedMake) {
-                // Reset year dropdown
-                resetDropdown($yearSelect);
+            if (selectedModel && this.state.make) {
+                this.state.model = selectedModel;
+                this.state.year = null;
                 
-                // Load years for selected model
-                loadYears(selectedMake, selectedModel);
-                
-                // Load tire results for Make + Model
-                loadTireResults(selectedMake, selectedModel);
+                this.resetDependentDropdowns(['year']);
+                this.loadYears(this.state.make, selectedModel);
+                this.loadTireResults(this.state.make, selectedModel);
+                this.updateFormState();
             }
-        });
-        
-        // Handle Year selection
-        $yearSelect.on('change', function() {
-            const selectedYear = $(this).val();
-            const selectedMake = $makeSelect.val();
-            const selectedModel = $modelSelect.val();
+        }
+
+        /**
+         * Handle year selection change
+         */
+        handleYearChange(event) {
+            const selectedYear = $(event.target).val();
             
-            if (selectedYear && selectedMake && selectedModel) {
-                // Redirect to tire archive page
-                redirectToTireArchive(selectedMake, selectedModel, selectedYear);
+            if (selectedYear && this.state.make && this.state.model) {
+                this.state.year = selectedYear;
+                this.redirectToTireArchive(this.state.make, this.state.model, selectedYear);
             }
-        });
-        
-        // Handle Reset button
-        $resetButton.on('click', function() {
-            resetForm();
-        });
-    }
-    
-    /**
-     * Load makes with available tires
-     */
-    function loadMakes() {
-        const $makeSelect = $('#tpsf-make');
-        
-        showLoading($makeSelect);
-        
-        $.ajax({
-            url: tpsf_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'tpsf_get_makes',
-                nonce: tpsf_ajax.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    populateDropdown($makeSelect, response.data);
-                } else {
-                    showError('Failed to load makes.');
+        }
+
+        /**
+         * Handle reset button click
+         */
+        handleReset() {
+            this.resetForm();
+        }
+
+        /**
+         * Load makes with available tires
+         */
+        loadMakes() {
+            this.showLoading(this.elements.makeSelect);
+            
+            $.ajax({
+                url: tpsf_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'tpsf_get_makes',
+                    nonce: tpsf_ajax.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.populateDropdown(this.elements.makeSelect, response.data);
+                    } else {
+                        this.showError('Failed to load makes.');
+                    }
+                },
+                error: () => {
+                    this.showError('Error loading makes. Please try again.');
                 }
-            },
-            error: function() {
-                showError('Error loading makes. Please try again.');
-            }
-        });
-    }
-    
-    /**
-     * Load models for selected make
-     */
-    function loadModels(make) {
-        const $modelSelect = $('#tpsf-model');
-        
-        showLoading($modelSelect);
-        
-        $.ajax({
-            url: tpsf_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'tpsf_get_models',
-                make: make,
-                nonce: tpsf_ajax.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    populateDropdown($modelSelect, response.data);
-                    $modelSelect.prop('disabled', false);
-                } else {
-                    showError('Failed to load models.');
-                }
-            },
-            error: function() {
-                showError('Error loading models. Please try again.');
-            }
-        });
-    }
-    
-    /**
-     * Load years for selected model
-     */
-    function loadYears(make, model) {
-        const $yearSelect = $('#tpsf-year');
-        
-        showLoading($yearSelect);
-        
-        $.ajax({
-            url: tpsf_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'tpsf_get_years',
-                make: make,
-                model: model,
-                nonce: tpsf_ajax.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    populateDropdown($yearSelect, response.data);
-                    $yearSelect.prop('disabled', false);
-                } else {
-                    showError('Failed to load years.');
-                }
-            },
-            error: function() {
-                showError('Error loading years. Please try again.');
-            }
-        });
-    }
-    
-    /**
-     * Load tire results for Make + Model
-     */
-    function loadTireResults(make, model) {
-        const $resultsContainer = $('#tpsf-results');
-        const $resultsGrid = $('#tpsf-results-grid');
-        const $resultsCount = $('.tpsf-results-count');
-        
-        $resultsContainer.show();
-        showLoading($resultsGrid);
-        
-        $.ajax({
-            url: tpsf_ajax.ajax_url,
-            type: 'POST',
-            data: {
-                action: 'tpsf_get_tire_results',
-                make: make,
-                model: model,
-                nonce: tpsf_ajax.nonce
-            },
-            success: function(response) {
-                if (response.success) {
-                    displayTireResults(response.data, $resultsGrid, $resultsCount);
-                } else {
-                    showError('No tires found for this vehicle.');
-                }
-            },
-            error: function() {
-                showError('Error loading tire results. Please try again.');
-            }
-        });
-    }
-    
-    /**
-     * Redirect to tire archive page
-     */
-    function redirectToTireArchive(make, model, year) {
-        const archiveUrl = `/tires-for/${make}/${model}/${year}/`;
-        
-        // Save selections to cookies before redirect
-        saveSelectionsToCookies(make, model, year);
-        
-        // Redirect to archive page
-        window.location.href = archiveUrl;
-    }
-    
-    /**
-     * Populate dropdown with options
-     */
-    function populateDropdown($select, options) {
-        $select.empty();
-        $select.append('<option value="">Select ' + $select.attr('id').replace('tpsf-', '').charAt(0).toUpperCase() + $select.attr('id').replace('tpsf-', '').slice(1) + '</option>');
-        
-        if (options && options.length > 0) {
-            options.forEach(function(option) {
-                $select.append('<option value="' + option.value + '">' + option.label + '</option>');
             });
         }
-    }
-    
-    /**
-     * Reset dropdown to initial state
-     */
-    function resetDropdown($select) {
-        $select.empty();
-        $select.append('<option value="">Select ' + $select.attr('id').replace('tpsf-', '').charAt(0).toUpperCase() + $select.attr('id').replace('tpsf-', '').slice(1) + '</option>');
-        $select.prop('disabled', true);
-    }
-    
-    /**
-     * Show loading state for dropdown
-     */
-    function showLoading($element) {
-        $element.html('<option value="">Loading...</option>');
-    }
-    
-    /**
-     * Display tire results
-     */
-    function displayTireResults(tires, $container, $count) {
-        if (!tires || tires.length === 0) {
-            $container.html('<div class="tpsf-no-results">No tires found for this vehicle.</div>');
-            $count.text('0 results');
-            return;
+
+        /**
+         * Load models for selected make
+         */
+        loadModels(make) {
+            this.showLoading(this.elements.modelSelect);
+            
+            $.ajax({
+                url: tpsf_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'tpsf_get_models',
+                    make: make,
+                    nonce: tpsf_ajax.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.populateDropdown(this.elements.modelSelect, response.data);
+                        this.elements.modelSelect.prop('disabled', false);
+                    } else {
+                        this.showError('Failed to load models.');
+                    }
+                },
+                error: () => {
+                    this.showError('Error loading models. Please try again.');
+                }
+            });
         }
-        
-        let html = '';
-        tires.forEach(function(tire) {
-            html += `
-                <div class="tpsf-tire-card tpsf-fade-in">
-                    <img src="${tire.image}" alt="${tire.title}" class="tpsf-tire-image">
+
+        /**
+         * Load years for selected model
+         */
+        loadYears(make, model) {
+            this.showLoading(this.elements.yearSelect);
+            
+            $.ajax({
+                url: tpsf_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'tpsf_get_years',
+                    make: make,
+                    model: model,
+                    nonce: tpsf_ajax.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.populateDropdown(this.elements.yearSelect, response.data);
+                        this.elements.yearSelect.prop('disabled', false);
+                    } else {
+                        this.showError('Failed to load years.');
+                    }
+                },
+                error: () => {
+                    this.showError('Error loading years. Please try again.');
+                }
+            });
+        }
+
+        /**
+         * Load tire results for make and model
+         */
+        loadTireResults(make, model) {
+            this.elements.resultsContainer.show();
+            this.showLoading(this.elements.resultsGrid);
+            
+            $.ajax({
+                url: tpsf_ajax.ajax_url,
+                type: 'POST',
+                data: {
+                    action: 'tpsf_get_tire_results',
+                    make: make,
+                    model: model,
+                    nonce: tpsf_ajax.nonce
+                },
+                success: (response) => {
+                    if (response.success) {
+                        this.displayTireResults(response.data);
+                    } else {
+                        this.showError('No tires found for this vehicle.');
+                    }
+                },
+                error: () => {
+                    this.showError('Error loading tire results. Please try again.');
+                }
+            });
+        }
+
+        /**
+         * Display tire results
+         */
+        displayTireResults(tires) {
+            if (!tires || tires.length === 0) {
+                this.elements.resultsGrid.html('<div class="tpsf-no-results">No tires found for this vehicle.</div>');
+                this.elements.resultsCount.text('0 results');
+                return;
+            }
+            
+            let html = '';
+            tires.forEach((tire, index) => {
+                html += this.createTireCard(tire, index);
+            });
+            
+            this.elements.resultsGrid.html(html);
+            this.elements.resultsCount.text(tires.length + ' results');
+        }
+
+        /**
+         * Create tire card HTML
+         */
+        createTireCard(tire, index) {
+            return `
+                <div class="tpsf-tire-card ${CONFIG.classes.fadeIn}" style="animation-delay: ${index * 0.1}s">
+                    <img src="${tire.image || '/wp-content/plugins/tirepoint-search-form/assets/images/placeholder-tire.jpg'}" 
+                         alt="${tire.title}" 
+                         class="tpsf-tire-image"
+                         onerror="this.src='/wp-content/plugins/tirepoint-search-form/assets/images/placeholder-tire.jpg'">
                     <h4 class="tpsf-tire-title">${tire.title}</h4>
-                    <div class="tpsf-tire-size">${tire.size}</div>
-                    <div class="tpsf-tire-type">${tire.type}</div>
-                    <div class="tpsf-tire-price">${tire.price}</div>
-                    <div class="tpsf-tire-availability">${tire.availability}</div>
+                    <div class="tpsf-tire-size">${tire.size || 'Size not specified'}</div>
+                    <div class="tpsf-tire-type">${tire.type || 'All Season'}</div>
+                    <div class="tpsf-tire-price">${tire.price || 'Price on request'}</div>
+                    <div class="tpsf-tire-availability">${tire.availability || 'Check availability'}</div>
                 </div>
             `;
-        });
-        
-        $container.html(html);
-        $count.text(tires.length + ' results');
-    }
-    
-    /**
-     * Reset form to initial state
-     */
-    function resetForm() {
-        $('#tpsf-make').val('');
-        resetDropdown($('#tpsf-model'));
-        resetDropdown($('#tpsf-year'));
-        $('#tpsf-results').hide();
-        
-        // Clear cookies
-        clearSavedSelections();
-    }
-    
-    /**
-     * Save selections to cookies
-     */
-    function saveSelectionsToCookies(make, model, year) {
-        const expires = new Date();
-        expires.setDate(expires.getDate() + 30); // 30 days
-        
-        document.cookie = `tpsf_make=${make}; expires=${expires.toUTCString()}; path=/`;
-        document.cookie = `tpsf_model=${model}; expires=${expires.toUTCString()}; path=/`;
-        document.cookie = `tpsf_year=${year}; expires=${expires.toUTCString()}; path=/`;
-    }
-    
-    /**
-     * Load saved selections from cookies
-     */
-    function loadSavedSelections() {
-        const make = getCookie('tpsf_make');
-        const model = getCookie('tpsf_model');
-        const year = getCookie('tpsf_year');
-        
-        if (make) {
-            $('#tpsf-make').val(make);
-            // Trigger model loading
-            $('#tpsf-make').trigger('change');
+        }
+
+        /**
+         * Update form state and visual appearance
+         */
+        updateFormState() {
+            const { make, model, year } = this.state;
             
-            // If we have model and year, load them after a delay
-            if (model && year) {
-                setTimeout(function() {
-                    $('#tpsf-model').val(model).trigger('change');
-                    setTimeout(function() {
-                        $('#tpsf-year').val(year);
-                    }, 500);
-                }, 500);
+            // Remove all state classes
+            this.elements.formRow.removeClass([
+                CONFIG.classes.singleDropdown,
+                CONFIG.classes.twoDropdowns,
+                CONFIG.classes.threeDropdowns
+            ]);
+            
+            // Add appropriate state class
+            if (make && !model && !year) {
+                this.elements.formRow.addClass(CONFIG.classes.singleDropdown);
+            } else if (make && model && !year) {
+                this.elements.formRow.addClass(CONFIG.classes.twoDropdowns);
+            } else if (make && model && year) {
+                this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
             }
         }
-    }
-    
-    /**
-     * Clear saved selections from cookies
-     */
-    function clearSavedSelections() {
-        document.cookie = 'tpsf_make=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-        document.cookie = 'tpsf_model=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-        document.cookie = 'tpsf_year=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/';
-    }
-    
-    /**
-     * Get cookie value by name
-     */
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) return parts.pop().split(';').shift();
-        return null;
-    }
-    
-    /**
-     * Show error message
-     */
-    function showError(message) {
-        const $error = $('<div class="tpsf-error">' + message + '</div>');
-        $('.tpsf-search-container').append($error);
-        
-        // Remove error after 5 seconds
-        setTimeout(function() {
-            $error.fadeOut(function() {
-                $(this).remove();
+
+        /**
+         * Reset dependent dropdowns
+         */
+        resetDependentDropdowns(dropdowns) {
+            dropdowns.forEach(dropdown => {
+                const element = this.elements[dropdown + 'Select'];
+                this.resetDropdown(element);
             });
-        }, 5000);
+        }
+
+        /**
+         * Reset dropdown to initial state
+         */
+        resetDropdown($select) {
+            $select.empty();
+            const label = $select.attr('id').replace('tpsf-', '').charAt(0).toUpperCase() + 
+                         $select.attr('id').replace('tpsf-', '').slice(1);
+            $select.append(`<option value="">Select ${label}</option>`);
+            $select.prop('disabled', true);
+        }
+
+        /**
+         * Populate dropdown with options
+         */
+        populateDropdown($select, options) {
+            $select.empty();
+            const label = $select.attr('id').replace('tpsf-', '').charAt(0).toUpperCase() + 
+                         $select.attr('id').replace('tpsf-', '').slice(1);
+            $select.append(`<option value="">Select ${label}</option>`);
+            
+            if (options && options.length > 0) {
+                options.forEach(option => {
+                    $select.append(`<option value="${option.value}">${option.label}</option>`);
+                });
+            }
+        }
+
+        /**
+         * Show loading state
+         */
+        showLoading($element) {
+            $element.html('<option value="">Loading...</option>');
+        }
+
+        /**
+         * Hide results container
+         */
+        hideResults() {
+            this.elements.resultsContainer.hide();
+        }
+
+        /**
+         * Reset form to initial state
+         */
+        resetForm() {
+            this.state = { make: null, model: null, year: null };
+            this.elements.makeSelect.val('');
+            this.resetDependentDropdowns(['model', 'year']);
+            this.hideResults();
+            this.updateFormState();
+            this.clearSavedSelections();
+        }
+
+        /**
+         * Redirect to tire archive page
+         */
+        redirectToTireArchive(make, model, year) {
+            const archiveUrl = `/tires-for/${make}/${model}/${year}/`;
+            this.saveSelectionsToCookies(make, model, year);
+            window.location.href = archiveUrl;
+        }
+
+        /**
+         * Save selections to cookies
+         */
+        saveSelectionsToCookies(make, model, year) {
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 30);
+            
+            document.cookie = `tpsf_make=${make}; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `tpsf_model=${model}; expires=${expires.toUTCString()}; path=/`;
+            document.cookie = `tpsf_year=${year}; expires=${expires.toUTCString()}; path=/`;
+        }
+
+        /**
+         * Load saved selections from cookies
+         */
+        loadSavedSelections() {
+            const make = this.getCookie('tpsf_make');
+            const model = this.getCookie('tpsf_model');
+            const year = this.getCookie('tpsf_year');
+            
+            if (make) {
+                this.elements.makeSelect.val(make);
+                this.state.make = make;
+                
+                if (model) {
+                    setTimeout(() => {
+                        this.elements.modelSelect.val(model);
+                        this.state.model = model;
+                        
+                        if (year) {
+                            setTimeout(() => {
+                                this.elements.yearSelect.val(year);
+                                this.state.year = year;
+                                this.updateFormState();
+                            }, 500);
+                        }
+                    }, 500);
+                }
+            }
+        }
+
+        /**
+         * Clear saved selections from cookies
+         */
+        clearSavedSelections() {
+            const cookies = ['tpsf_make', 'tpsf_model', 'tpsf_year'];
+            cookies.forEach(cookie => {
+                document.cookie = `${cookie}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/`;
+            });
+        }
+
+        /**
+         * Get cookie value by name
+         */
+        getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return null;
+        }
+
+        /**
+         * Show error message
+         */
+        showError(message) {
+            const $error = $(`<div class="tpsf-error">${message}</div>`);
+            $('.tpsf-search-container').append($error);
+            
+            setTimeout(() => {
+                $error.fadeOut(() => {
+                    $error.remove();
+                });
+            }, 5000);
+        }
     }
-    
-    // Initialize the vehicle search form
-    initVehicleSearchForm();
-    
-    // Expose functions globally for potential use
-    window.TPSF = {
-        loadMakes: loadMakes,
-        loadModels: loadModels,
-        loadYears: loadYears,
-        loadTireResults: loadTireResults,
-        resetForm: resetForm,
-        saveSelectionsToCookies: saveSelectionsToCookies,
-        loadSavedSelections: loadSavedSelections
-    };
-}); 
+
+    // Initialize when DOM is ready
+    $(document).ready(() => {
+        window.TPSF = new TirePointSearchController();
+    });
+
+})(jQuery); 

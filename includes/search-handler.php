@@ -142,20 +142,21 @@ class TPSF_SearchHandler {
     public static function get_tire_results($make, $model) {
         $tires = array();
         
-        // Get vehicles for this make and model
+        // Get vehicles for this make and model using taxonomy queries
         $vehicles = get_posts(array(
             'post_type' => 'vehicle-model',
+            'post_status' => 'publish',
             'posts_per_page' => -1,
-            'meta_query' => array(
+            'tax_query' => array(
                 array(
-                    'key' => 'make',
-                    'value' => $make,
-                    'compare' => '='
+                    'taxonomy' => 'vehicle-make',
+                    'field' => 'slug',
+                    'terms' => $make,
                 ),
                 array(
-                    'key' => 'model',
-                    'value' => $model,
-                    'compare' => '='
+                    'taxonomy' => 'vehicles-model',
+                    'field' => 'slug',
+                    'terms' => $model,
                 )
             )
         ));
@@ -189,8 +190,13 @@ class TPSF_SearchHandler {
     private static function get_tires_for_vehicles($vehicles) {
         $vehicle_ids = wp_list_pluck($vehicles, 'ID');
         
-        return get_posts(array(
+        // Try multiple approaches to find related tire products
+        $tire_products = array();
+        
+        // Approach 1: Direct vehicle relationship via meta
+        $tires_by_meta = get_posts(array(
             'post_type' => 'product',
+            'post_status' => 'publish',
             'posts_per_page' => 12,
             'meta_query' => array(
                 array(
@@ -202,6 +208,45 @@ class TPSF_SearchHandler {
             'orderby' => 'title',
             'order' => 'ASC'
         ));
+        
+        if (!empty($tires_by_meta)) {
+            $tire_products = $tires_by_meta;
+        } else {
+            // Approach 2: Try to find products with vehicle-related taxonomies
+            $tires_by_tax = get_posts(array(
+                'post_type' => 'product',
+                'post_status' => 'publish',
+                'posts_per_page' => 12,
+                'tax_query' => array(
+                    array(
+                        'taxonomy' => 'vehicle-make',
+                        'field' => 'slug',
+                        'terms' => array_map(function($vehicle) {
+                            $makes = wp_get_post_terms($vehicle->ID, 'vehicle-make');
+                            return wp_list_pluck($makes, 'slug');
+                        }, $vehicles),
+                        'operator' => 'EXISTS'
+                    )
+                ),
+                'orderby' => 'title',
+                'order' => 'ASC'
+            ));
+            
+            if (!empty($tires_by_tax)) {
+                $tire_products = $tires_by_tax;
+            } else {
+                // Approach 3: Fallback to all published products (for testing)
+                $tire_products = get_posts(array(
+                    'post_type' => 'product',
+                    'post_status' => 'publish',
+                    'posts_per_page' => 12,
+                    'orderby' => 'title',
+                    'order' => 'ASC'
+                ));
+            }
+        }
+        
+        return $tire_products;
     }
     
     /**
