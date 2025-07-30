@@ -134,7 +134,26 @@
             // Handle dropdown toggle
             $trigger.on('click', function(e) {
                 e.preventDefault();
-                $customDropdown.toggleClass('open');
+                
+                if ($customDropdown.hasClass('open')) {
+                    $customDropdown.removeClass('open');
+                } else {
+                    // Close all other dropdowns first
+                    $('.tpsf-custom-dropdown').removeClass('open');
+                    
+                    // Calculate position for this dropdown
+                    const triggerRect = $trigger[0].getBoundingClientRect();
+                    const menu = $menu[0];
+                    
+                    // Position the menu below the trigger
+                    menu.style.position = 'fixed';
+                    menu.style.top = (triggerRect.bottom + 8) + 'px';
+                    menu.style.left = triggerRect.left + 'px';
+                    menu.style.width = triggerRect.width + 'px';
+                    menu.style.zIndex = '999999';
+                    
+                    $customDropdown.addClass('open');
+                }
             });
             
             // Handle option selection
@@ -150,7 +169,15 @@
             // Close dropdown when clicking outside
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('.tpsf-custom-dropdown').length) {
-                    $customDropdown.removeClass('open');
+                    $('.tpsf-custom-dropdown').removeClass('open');
+                    // Reset positioning
+                    $('.tpsf-custom-dropdown-menu').css({
+                        position: 'absolute',
+                        top: '',
+                        left: '',
+                        width: '',
+                        zIndex: ''
+                    });
                 }
             });
             
