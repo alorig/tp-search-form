@@ -51,9 +51,9 @@
         init() {
             this.cacheElements();
             this.bindEvents();
+            this.updateFormState(); // Set initial state first
             this.loadMakes();
-            this.loadSavedSelections();
-            this.updateFormState();
+            // Don't load saved selections on init to prevent dropdowns from showing
         }
 
         /**
@@ -242,15 +242,18 @@
                 },
                 success: (response) => {
                     console.log('Tire results response:', response);
-                    if (response.success) {
+                    if (response.success && response.data && response.data.length > 0) {
                         this.displayTireResults(response.data);
                     } else {
-                        this.showError('No tires found for this vehicle.');
+                        this.elements.resultsGrid.html('<div class="tpsf-no-results">No tires found for this vehicle.</div>');
+                        this.elements.resultsCount.text('0 results');
                     }
                 },
                 error: (xhr, status, error) => {
                     console.error('Tire results error:', error);
-                    this.showError('Error loading tire results. Please try again.');
+                    console.error('Response:', xhr.responseText);
+                    this.elements.resultsGrid.html('<div class="tpsf-no-results">Error loading tire results. Please try again.</div>');
+                    this.elements.resultsCount.text('0 results');
                 }
             });
         }

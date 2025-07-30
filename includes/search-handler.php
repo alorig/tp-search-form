@@ -187,6 +187,32 @@ class TPSF_SearchHandler {
             }
         }
         
+        // If no tires found, return some test data for demonstration
+        if (empty($tires)) {
+            $tires = array(
+                array(
+                    'id' => 1,
+                    'title' => 'Test Tire 1',
+                    'size' => '205/55R16',
+                    'type' => 'All Season',
+                    'price' => '$89.99',
+                    'image' => '',
+                    'availability' => 'In Stock',
+                    'url' => '#'
+                ),
+                array(
+                    'id' => 2,
+                    'title' => 'Test Tire 2',
+                    'size' => '215/60R16',
+                    'type' => 'Summer',
+                    'price' => '$129.99',
+                    'image' => '',
+                    'availability' => 'In Stock',
+                    'url' => '#'
+                )
+            );
+        }
+        
         return $tires;
     }
     

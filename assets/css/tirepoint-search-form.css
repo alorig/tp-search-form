@@ -70,11 +70,17 @@
     justify-content: center;
 }
 
+.tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(1) {
+    flex: 0 0 auto;
+    max-width: 300px;
+}
+
 .tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(2),
 .tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(3) {
     opacity: 0;
     transform: translateX(50px);
     pointer-events: none;
+    display: none;
 }
 
 /* Two Dropdown State */
@@ -86,6 +92,7 @@
     opacity: 0;
     transform: translateX(50px);
     pointer-events: none;
+    display: none;
 }
 
 .tpsf-form-row.two-dropdowns .tpsf-form-group:nth-child(1),
@@ -93,11 +100,19 @@
     opacity: 1;
     transform: translateX(0);
     pointer-events: auto;
+    display: block;
 }
 
 /* Three Dropdown State */
 .tpsf-form-row.three-dropdowns {
     justify-content: space-between;
+}
+
+.tpsf-form-row.three-dropdowns .tpsf-form-group {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    display: block;
 }
 
 /* Form Groups */
