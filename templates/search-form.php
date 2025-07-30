@@ -23,21 +23,7 @@ $button_text = isset($atts['button_text']) ? esc_attr($atts['button_text']) : 'F
                 <label for="tpsf-make" class="tpsf-label">Make</label>
                 <select id="tpsf-make" name="make" class="tpsf-select" required>
                     <option value="">Select Make</option>
-                    <?php
-                    // Get makes that have vehicles with tire products
-                    $makes = get_terms(array(
-                        'taxonomy' => 'vehicle-make',
-                        'hide_empty' => true,
-                        'orderby' => 'name',
-                        'order' => 'ASC'
-                    ));
-                    
-                    if (!empty($makes) && !is_wp_error($makes)) {
-                        foreach ($makes as $make) {
-                            echo '<option value="' . esc_attr($make->slug) . '">' . esc_html($make->name) . '</option>';
-                        }
-                    }
-                    ?>
+                    <!-- Makes will be loaded dynamically via AJAX -->
                 </select>
             </div>
 

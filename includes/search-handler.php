@@ -13,6 +13,35 @@ if (!defined('ABSPATH')) {
 class TPSF_SearchHandler {
     
     /**
+     * Get makes that have vehicles with tire products
+     */
+    public static function get_makes() {
+        $makes = array();
+        
+        // Get all makes
+        $make_terms = get_terms(array(
+            'taxonomy' => 'vehicle-make',
+            'hide_empty' => true,
+            'orderby' => 'name',
+            'order' => 'ASC'
+        ));
+        
+        if (!empty($make_terms) && !is_wp_error($make_terms)) {
+            foreach ($make_terms as $make) {
+                // Check if this make has vehicles with tire products
+                if (self::make_has_tires($make->slug)) {
+                    $makes[] = array(
+                        'value' => $make->slug,
+                        'label' => $make->name
+                    );
+                }
+            }
+        }
+        
+        return $makes;
+    }
+    
+    /**
      * Get models for selected make
      */
     public static function get_models($make) {
@@ -135,6 +164,29 @@ class TPSF_SearchHandler {
         }
         
         return $tires;
+    }
+    
+    /**
+     * Check if make has vehicles with tire products
+     */
+    private static function make_has_tires($make_slug) {
+        $vehicles = get_posts(array(
+            'post_type' => 'vehicle-model',
+            'posts_per_page' => 1,
+            'meta_query' => array(
+                array(
+                    'key' => 'make',
+                    'value' => $make_slug,
+                    'compare' => '='
+                )
+            )
+        ));
+        
+        if (!empty($vehicles)) {
+            return self::vehicle_has_tires($vehicles[0]->ID);
+        }
+        
+        return false;
     }
     
     /**

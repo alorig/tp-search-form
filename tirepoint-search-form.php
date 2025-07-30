@@ -36,6 +36,8 @@ class TirePointSearchForm {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         
         // AJAX handlers for vehicle search
+        add_action('wp_ajax_tpsf_get_makes', array($this, 'handle_get_makes'));
+        add_action('wp_ajax_nopriv_tpsf_get_makes', array($this, 'handle_get_makes'));
         add_action('wp_ajax_tpsf_get_models', array($this, 'handle_get_models'));
         add_action('wp_ajax_nopriv_tpsf_get_models', array($this, 'handle_get_models'));
         add_action('wp_ajax_tpsf_get_years', array($this, 'handle_get_years'));
@@ -76,6 +78,16 @@ class TirePointSearchForm {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('tpsf_nonce')
         ));
+    }
+    
+    /**
+     * Handle AJAX request to get makes with available tires
+     */
+    public function handle_get_makes() {
+        check_ajax_referer('tpsf_nonce', 'nonce');
+        
+        $makes = TPSF_SearchHandler::get_makes();
+        wp_send_json_success($makes);
     }
     
     /**

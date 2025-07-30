@@ -13,6 +13,9 @@ jQuery(document).ready(function($) {
         const $resultsContainer = $('#tpsf-results');
         const $loadingSpinner = $('#tpsf-loading');
         
+        // Load makes dynamically on page load
+        loadMakes();
+        
         // Load saved selections from cookies
         loadSavedSelections();
         
@@ -65,6 +68,34 @@ jQuery(document).ready(function($) {
         // Handle Reset button
         $resetButton.on('click', function() {
             resetForm();
+        });
+    }
+    
+    /**
+     * Load makes with available tires
+     */
+    function loadMakes() {
+        const $makeSelect = $('#tpsf-make');
+        
+        showLoading($makeSelect);
+        
+        $.ajax({
+            url: tpsf_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tpsf_get_makes',
+                nonce: tpsf_ajax.nonce
+            },
+            success: function(response) {
+                if (response.success) {
+                    populateDropdown($makeSelect, response.data);
+                } else {
+                    showError('Failed to load makes.');
+                }
+            },
+            error: function() {
+                showError('Error loading makes. Please try again.');
+            }
         });
     }
     
@@ -322,6 +353,7 @@ jQuery(document).ready(function($) {
     
     // Expose functions globally for potential use
     window.TPSF = {
+        loadMakes: loadMakes,
         loadModels: loadModels,
         loadYears: loadYears,
         loadTireResults: loadTireResults,
