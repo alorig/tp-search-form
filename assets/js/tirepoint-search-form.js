@@ -307,14 +307,12 @@
             ]);
             
             // Add appropriate state class
-            if (make && !model && !year) {
-                this.elements.formRow.addClass(CONFIG.classes.twoDropdowns);
-            } else if (make && model && !year) {
-                this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
-            } else if (make && model && year) {
-                this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
-            } else {
+            if (!make) {
                 this.elements.formRow.addClass(CONFIG.classes.singleDropdown);
+            } else if (make && !model) {
+                this.elements.formRow.addClass(CONFIG.classes.twoDropdowns);
+            } else if (make && model) {
+                this.elements.formRow.addClass(CONFIG.classes.threeDropdowns);
             }
         }
 

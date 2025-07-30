@@ -70,7 +70,8 @@
     justify-content: center;
 }
 
-.tpsf-form-row.single-dropdown .tpsf-form-group:not(:first-child) {
+.tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(2),
+.tpsf-form-row.single-dropdown .tpsf-form-group:nth-child(3) {
     opacity: 0;
     transform: translateX(50px);
     pointer-events: none;
