@@ -132,8 +132,9 @@ class TirePointSearchForm {
         $make = sanitize_text_field($_POST['make']);
         $model = sanitize_text_field($_POST['model']);
         
-        if (empty($make) || empty($model)) {
-            wp_send_json_error('Make and Model are required.');
+        // Allow make-only searches
+        if (empty($make)) {
+            wp_send_json_error('Make is required.');
         }
         
         // Log the search
