@@ -145,12 +145,11 @@
                     const triggerRect = $trigger[0].getBoundingClientRect();
                     const menu = $menu[0];
                     
-                    // Position the menu below the trigger
-                    menu.style.position = 'fixed';
+                    // Position the menu below the trigger using fixed positioning
                     menu.style.top = (triggerRect.bottom + 8) + 'px';
                     menu.style.left = triggerRect.left + 'px';
                     menu.style.width = triggerRect.width + 'px';
-                    menu.style.zIndex = '999999';
+                    menu.style.zIndex = '2147483647';
                     
                     $customDropdown.addClass('open');
                 }
@@ -170,13 +169,11 @@
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('.tpsf-custom-dropdown').length) {
                     $('.tpsf-custom-dropdown').removeClass('open');
-                    // Reset positioning
+                    // Reset positioning to default values
                     $('.tpsf-custom-dropdown-menu').css({
-                        position: 'absolute',
-                        top: '',
-                        left: '',
-                        width: '',
-                        zIndex: ''
+                        top: '0',
+                        left: '0',
+                        width: 'auto'
                     });
                 }
             });
